@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
-const db = new Sequelize('test', 'root', 'root', {
-    host: 'localhost',
-    dialect: 'mariadb',
+const db = new Sequelize('sql12618725', 'sql12618725', '43DaEcYPwa', {
+    host: 'sql12.freemysqlhosting.net',
+    dialect: 'mysql',
 
     pool: {
         max: 5,

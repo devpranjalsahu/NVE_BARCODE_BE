@@ -7,9 +7,9 @@ const Box = db.define('box', {
         primaryKey: true,
         autoIncrement: true
     },
-    purchaseOrderId: {
+    barcodeID: {
         type: Sequelize.INTEGER,
-        unique:true
+        allowNull: false
     },
     SZ01:{
         type: Sequelize.STRING,
@@ -60,8 +60,6 @@ const Box = db.define('box', {
         allowNull: false
     }
     
-},{
-    initialAutoIncrement:"00000000000000000"
 });
 
 module.exports = Box;

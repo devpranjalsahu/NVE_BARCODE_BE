@@ -2,6 +2,8 @@ const { Op } = require('sequelize');
 const purchaseOrderModel = require('../models/purchaseOrderModel');
 const balanceQuantityModel = require('../models/balanceQuantityModel');
 const packedQuantityModel = require('../models/packedQuantityModel');
+const barcodeModel = require('../models/barcodeModel');
+
 
 
 
@@ -17,6 +19,9 @@ new: async (req, res)=>{
     const sup = user.supplier || null;
     const {purchaseOrderId, entries} = req.body;
     console.log(entries,purchaseOrderId);
+    const bc = await barcodeModel.create({
+        username:user.username,
+    })
 
     // First, we start a transaction from your connection and save it into a variable
 // const t = await sequelize.transaction();
@@ -32,7 +37,7 @@ new: async (req, res)=>{
 //   await t.rollback();
 
 // }
-    res.json({message:'success'})
+    res.json({message:'success',bc})
 }
 
 }
