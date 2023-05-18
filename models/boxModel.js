@@ -11,6 +11,10 @@ const Box = db.define('box', {
         type: Sequelize.INTEGER,
         allowNull: false
     },
+    purchaseOrderID: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
     SZ01:{
         type: Sequelize.STRING,
         allowNull: false
