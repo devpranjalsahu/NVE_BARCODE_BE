@@ -10,8 +10,8 @@ const { Sequelize } = require('sequelize');
 //         idle: 10000
 //     }
 // });
-const db = new Sequelize('test', 'root', 'root', {
-    host: '127.0.0.1',
+const db = new Sequelize('appdb', 'dbadmin', 'pranjal', {
+    host: '216.48.176.148',
     dialect: 'mariadb',
     logging: false,
     pool: {
