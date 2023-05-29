@@ -32,7 +32,7 @@ app.use("*",(req,res)=>{
     console.log("No path found for")
     res.status(404).send("404")
 })
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5100;
 
 db.sync({
     logging: false,

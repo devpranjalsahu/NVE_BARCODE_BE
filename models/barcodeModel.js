@@ -3,7 +3,7 @@ const db = require('../config/db');
 
 const Barcode = db.define('barcode', {
     id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         autoIncrement: true
     },
@@ -31,7 +31,18 @@ const Barcode = db.define('barcode', {
         type: Sequelize.STRING,
         allowNull: false
     },
+    ShipNo:{
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    shipmentSequenceId:{
+        type: Sequelize.STRING,
+        allowNull: false
+    },
 
+
+},{
+    initialAutoIncrement:"34029015993015800"
 });
 
 module.exports = Barcode;

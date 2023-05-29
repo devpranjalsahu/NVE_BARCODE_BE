@@ -4,24 +4,18 @@ const balanceQuantityModel = require('../models/balanceQuantityModel');
 const packedQuantityModel = require('../models/packedQuantityModel');
 const barcodeModel = require('../models/barcodeModel');
 const boxModel = require('../models/boxModel');
-const Barcode = require('../models/barcodeModel');
-
-
-
-
-
-
-
-
-
+const shipmentModel = require('../models/shipmentModel');
 module.exports ={
 
 new: async (req, res)=>{
     const user = req.user;
     const fact = user.factory || null;
     const sup = user.supplier || null;
-    const {poEntries, userEntries,weightData} = req.body;
-console.log(poEntries, userEntries,weightData)
+    const {poEntries, userEntries,weightData,ShipNo} = req.body;
+    const shipmentSequence = await shipmentModel.create({
+        username:user.username
+    });
+    
     for(let i = 0; i <weightData.numOfBoxes;i++){
         const bc = barcodeModel.create({
             username:user.username,
@@ -30,6 +24,8 @@ console.log(poEntries, userEntries,weightData)
             Length:weightData.Length,
             Width:weightData.Width,
             Height:weightData.Height,
+            shipmentSequenceId:shipmentSequence.id,
+            ShipNo:"change"
             }).then(async res => {
                 const keys = Object.keys(userEntries);
                 console.log(keys,'xx')

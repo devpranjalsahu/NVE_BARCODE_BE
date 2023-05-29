@@ -8,7 +8,7 @@ const Box = db.define('box', {
         autoIncrement: true
     },
     barcodeID: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         allowNull: false
     },
     purchaseOrderID: {
