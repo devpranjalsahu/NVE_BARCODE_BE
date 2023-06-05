@@ -12,10 +12,12 @@ module.exports ={
 
 getAll: async (req, res) => {
     const user = req.user;
-
+    console.log(user, user.username)
    
     const entries = await entryModel.findAll({
-        username:user.name
+        where:{
+            username:user.username
+        }
     })
 
 
