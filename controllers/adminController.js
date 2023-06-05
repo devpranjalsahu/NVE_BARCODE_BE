@@ -1,12 +1,58 @@
+const jsonwebtoken = require('jsonwebtoken')
+
 const PO = require('../models/purchaseOrderModel')
 const PQ = require('../models/packedQuantityModel')
 const BQ = require('../models/balanceQuantityModel')
 const data = require('../NVEBARCODE.json')
 const Lot = require('../models/lotModel')
+const Admin = require('../models/adminModel')
 
 
 // console.log('hi',__dirname)
 module.exports = {
+    create: (req, res) => {
+        const userData = req.body;
+        Admin.create(userData).
+            then((data) => {
+                res.status(201).json({
+                    data,
+                    message: "User created successfully"
+                });
+            })
+            .catch((error) => {
+                res.status(400).json({
+                    error: error,
+                    message: "Failed to create user"
+                });
+            });
+    },
+    login: async (req, res) =>{
+    const {username, password} = req.body;
+    if(!username ||!password){
+        return res.status(400).json({message:'Please enter all fields'});
+    }
+    const user = await Admin.findOne({where: {username, password},
+    attributes:{
+        exclude:['password']
+    }});
+    if(!user){
+        return res.status(400).json({message:'Invalid Credentials'});
+    }
+    const token = jsonwebtoken.sign(
+        { username: user.username },
+        process.env.TOKEN_KEY,
+        {
+          expiresIn: "7d",
+        }
+      );
+      // save user token
+      user.token = token;
+    
+    res.status(200).json({user,token});
+
+
+
+    },
     loadLots: (req, res) => {
         Lot.bulkCreate([{"LOT":"AA4","SR01":"2","SR02":"2","SR03":"0","SR04":"0","SR05":"0","SR06":"0","SR07":"0","SR08":"0","SR09":"0","SR10":"0","SR11":"0","SR12":"0"},                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         {"LOT":"AA5","SR01":"3","SR02":"2","SR03":"0","SR04":"0","SR05":"0","SR06":"0","SR07":"0","SR08":"0","SR09":"0","SR10":"0","SR11":"0","SR12":"0"},                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
@@ -699,5 +745,8 @@ module.exports = {
        res.status(201).json({
         message: "POs loaded"
        })
-    }
+    },
+
+
+
 }

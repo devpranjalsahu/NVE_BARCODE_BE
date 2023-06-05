@@ -5,8 +5,60 @@ const packedQuantityModel = require('../models/packedQuantityModel');
 const barcodeModel = require('../models/barcodeModel');
 const boxModel = require('../models/boxModel');
 const shipmentModel = require('../models/shipmentModel');
+const entryModel = require('../models/entryModel');
+
+
 module.exports ={
 
+getAll: async (req, res) => {
+    const user = req.user;
+
+   
+    const entries = await entryModel.findAll({
+        username:user.name
+    })
+
+
+
+    res.status(200).json({
+        entries
+    })
+
+
+},
+
+get: async (req, res) =>{
+    const user = req.user;
+    const {shipmentSequenceId} = req.query;
+    const entry = await entryModel.findOne({
+        where:{
+            username:user.username,
+            shipmentSequenceId
+        }
+
+    })
+
+    const barcodeData = await barcodeModel.findOne({
+        where:{
+            shipmentSequenceId:shipmentSequenceId
+        }
+    })
+
+    const boxData = await boxModel.findAll({
+        where:{
+            barcodeID:barcodeData.id
+
+        },
+        include:purchaseOrderModel
+    })
+
+
+
+    // console.log(boxData)
+    res.status(200).json({
+        boxData
+    })
+},
 new: async (req, res)=>{
     const user = req.user;
     const fact = user.factory || null;
@@ -15,7 +67,19 @@ new: async (req, res)=>{
     const shipmentSequence = await shipmentModel.create({
         username:user.username
     });
-    
+    const entry = await entryModel.create({
+        username:user.username,
+        noOfBoxes:weightData.numOfBoxes,
+            NetWt:weightData.NetWt,
+            GrossWt:weightData.GrossWt,
+            Length:weightData.Length,
+            Width:weightData.Width,
+            Height:weightData.Height,
+            shipmentSequenceId:shipmentSequence.id,
+            ShipNo:"change"
+    })
+
+
     for(let i = 0; i <weightData.numOfBoxes;i++){
         const bc = barcodeModel.create({
             username:user.username,
@@ -34,6 +98,8 @@ new: async (req, res)=>{
                     await boxModel.create({
                         barcodeID:res.id,
                         purchaseOrderID:poEntries[key],
+            shipmentSequenceId:shipmentSequence.id,
+
                         ...userEntries[key],
                     })
                 }   

@@ -7,58 +7,43 @@ const Entry = db.define('entry', {
         primaryKey: true,
         autoIncrement: true
     },
-    purchaseOrderId: {
-        type: Sequelize.INTEGER,
-        unique:true
-    },
-    SZ01:{
+    noOfBoxes:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ02:{
+    username:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ03:{
+    NetWt:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ04:{
+    GrossWt:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ05:{
+    Length:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ06:{
+    Width:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ07:{
+    Height:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ08:{
+    ShipNo:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ09:{
+    shipmentSequenceId:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    SZ10:{
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    SZ11:{
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    SZ12:{
-        type: Sequelize.STRING,
-        allowNull: false
-    },
+    
 });
 
 module.exports = Entry;

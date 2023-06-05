@@ -8,6 +8,8 @@ const service = require("../controllers/entryController");
 // user
 
 router.post('/new',protect,service.new);
+router.get('/getAll',protect,service.getAll);
+router.get('/get',protect,service.get);
 // router.post('/getFilteredPurchaseOrders',protect,service.getFilteredPurchaseOrders);
 
 

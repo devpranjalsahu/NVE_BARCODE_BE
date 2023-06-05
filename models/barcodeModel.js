@@ -1,5 +1,8 @@
 const Sequelize = require('sequelize');
 const db = require('../config/db');
+const purchaseOrderModel = require('./purchaseOrderModel');
+
+
 
 const Barcode = db.define('barcode', {
     id: {
@@ -44,5 +47,7 @@ const Barcode = db.define('barcode', {
 },{
     initialAutoIncrement:"34029015993015800"
 });
+
+
 
 module.exports = Barcode;

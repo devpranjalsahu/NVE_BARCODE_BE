@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../config/db');
+const purchaseOrderModel = require('./purchaseOrderModel');
+
 
 const Box = db.define('box', {
     id: {
@@ -13,6 +15,10 @@ const Box = db.define('box', {
     },
     purchaseOrderID: {
         type: Sequelize.INTEGER,
+        allowNull: false
+    },
+    shipmentSequenceId:{
+        type: Sequelize.STRING,
         allowNull: false
     },
     SZ01:{
@@ -65,5 +71,11 @@ const Box = db.define('box', {
     }
     
 });
+
+
+Box.belongsTo(purchaseOrderModel,{ through: 'BoxPo' })
+
+// purchaseOrderModel.belongsToMany(Box,{ through: 'BoxPo' })
+
 
 module.exports = Box;
