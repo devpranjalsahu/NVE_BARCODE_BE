@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize');
 const db = require('../config/db');
 const purchaseOrderModel = require('./purchaseOrderModel');
+const barcodeModel = require('./barcodeModel');
+
 
 
 const Box = db.define('box', {
@@ -73,7 +75,8 @@ const Box = db.define('box', {
 });
 
 
-Box.belongsTo(purchaseOrderModel,{ through: 'BoxPo' })
+Box.belongsTo(purchaseOrderModel)
+// Box.belongsTo(barcodeModel)
 
 // purchaseOrderModel.belongsToMany(Box,{ through: 'BoxPo' })
 
