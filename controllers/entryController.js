@@ -73,7 +73,7 @@ new: async (req, res)=>{
     const user = req.user;
     const fact = user.factory || null;
     const sup = user.supplier || null;
-    const {poEntries, userEntries,weightData,ShipNo} = req.body;
+    const {poEntries, userEntries,weightData} = req.body;
     const shipmentSequence = await shipmentModel.create({
         username:user.username
     });
@@ -86,7 +86,7 @@ new: async (req, res)=>{
             Width:weightData.Width,
             Height:weightData.Height,
             shipmentSequenceId:shipmentSequence.id,
-            ShipNo:"change"
+            ShipNo:weightData.ShipNo
     })
 
 
@@ -99,7 +99,7 @@ new: async (req, res)=>{
             Width:weightData.Width,
             Height:weightData.Height,
             shipmentSequenceId:shipmentSequence.id,
-            ShipNo:"change"
+            ShipNo:weightData.ShipNo
             }).then(async res => {
                 const keys = Object.keys(userEntries);
                 console.log(keys,'xx')
