@@ -11,12 +11,8 @@ const Box = db.define('box', {
         primaryKey: true,
         autoIncrement: true
     },
-    barcodeID: {
+    barcodeId: {
         type: Sequelize.BIGINT,
-        allowNull: false
-    },
-    purchaseOrderID: {
-        type: Sequelize.INTEGER,
         allowNull: false
     },
     shipmentSequenceId:{

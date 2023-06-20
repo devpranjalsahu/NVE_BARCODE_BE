@@ -55,7 +55,7 @@ get: async (req, res) =>{
 
     const boxData = await boxModel.findAll({
         where:{
-            barcodeID:barcodeData.id
+            barcodeId:barcodeData.id
 
         },
         include:[purchaseOrderModel]
