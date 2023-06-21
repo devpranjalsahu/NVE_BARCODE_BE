@@ -25,14 +25,14 @@ getPurchaseOrders: async (req, res)=>{
 getFilteredPurchaseOrders: async (req, res) => {
 
     const user = req.user;
-    const {PO, STY, SEA, LOT, DIM, CLR, SUP, FACT} = req.body;
+    const {PO, STY, SEA, LOT, DIM, CLR, FACT, SUP} = req.body;
     const fact = user.factory || null;
     const sup = user.supplier || null;
     const poData = await purchaseOrderModel.findAll({
         where:{
             [Op.and]: [
-                fact ? {Fact:fact} : FACT ? {FACT} : null,
-                sup ? {SUP:sup} : SUP ? {SUP} : null,
+                fact ? {Fact:fact} : FACT?{FACT}: null,
+                sup ? {SUP:sup} : SUP?{SUP}:null,
                 PO ? {PO} : null,
                 STY ? {STY} : null,
                 SEA ? {SEA} : null,
@@ -46,9 +46,5 @@ getFilteredPurchaseOrders: async (req, res) => {
 
     res.status(200).json(poData)
 },
-
-filterPurchaseOrders: async (req, res)=>{
-
-}
 
 }
