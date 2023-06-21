@@ -9,6 +9,10 @@ const BQ = db.define('balanceQuantity', {
         primaryKey: true,
         autoIncrement: true,
     },
+    purchaseOrderId: {
+        type: Sequelize.INTEGER,
+        unique:true
+    },
     SOL: {
         type: Sequelize.STRING,
         allowNull: false
@@ -58,14 +62,6 @@ const BQ = db.define('balanceQuantity', {
         allowNull: false
     },
     DIM:{
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    ETA:{
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    ETD:{
         type: Sequelize.STRING,
         allowNull: false
     },

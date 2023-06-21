@@ -735,7 +735,7 @@ module.exports = {
                 purchaseOrderId:po.id,
                 TOT_QTY:"0"
             },{fields:[
-                'purchaseOrderId','SOL','FCUS','TYP','SUP','FACT','PO','SEA','STY','DES','SIZE','LOT','CLR','DIM','TOT_QTY'
+                'purchaseOrderId','SOL','FCUS','TYP','SUP','FACT','PO','SEA','STY','DES','SIZE','LOT','CLR','DIM','TOT_QTY',
             ]})
             await BQ.create({...d,purchaseOrderId:po.id})}
             catch(err){

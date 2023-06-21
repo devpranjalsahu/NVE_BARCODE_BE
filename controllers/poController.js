@@ -4,11 +4,6 @@ const balanceQuantityModel = require('../models/balanceQuantityModel');
 const packedQuantityModel = require('../models/packedQuantityModel');
 
 
-
-
-
-
-
 module.exports ={
 
 getPurchaseOrders: async (req, res)=>{
@@ -21,7 +16,8 @@ getPurchaseOrders: async (req, res)=>{
                 fact ? {Fact:fact} : null,
                 sup ? {SUP:sup} : null,
               ].filter(x => x!=null)
-        }
+        },
+        include:[balanceQuantityModel,packedQuantityModel]
     })
     res.json(poData)
 },
@@ -29,20 +25,20 @@ getPurchaseOrders: async (req, res)=>{
 getFilteredPurchaseOrders: async (req, res) => {
 
     const user = req.user;
-    const {PO, STY, SEA, LOT, DIM, CLR} = req.body;
+    const {PO, STY, SEA, LOT, DIM, CLR, SUP, FACT} = req.body;
     const fact = user.factory || null;
     const sup = user.supplier || null;
     const poData = await purchaseOrderModel.findAll({
         where:{
             [Op.and]: [
-                fact ? {Fact:fact} : null,
-                sup ? {SUP:sup} : null,
+                fact ? {Fact:fact} : FACT ? {FACT} : null,
+                sup ? {SUP:sup} : SUP ? {SUP} : null,
                 PO ? {PO} : null,
-                STY? {STY} : null,
-                SEA? {SEA} : null,
-                LOT? {LOT} : null,
-                DIM? {DIM} : null,
-                CLR? {CLR} : null,
+                STY ? {STY} : null,
+                SEA ? {SEA} : null,
+                LOT ? {LOT} : null,
+                DIM ? {DIM} : null,
+                CLR ? {CLR} : null,
             ].filter(x => x!=null)
         },
         include:[balanceQuantityModel,packedQuantityModel]
@@ -50,5 +46,9 @@ getFilteredPurchaseOrders: async (req, res) => {
 
     res.status(200).json(poData)
 },
+
+filterPurchaseOrders: async (req, res)=>{
+
+}
 
 }

@@ -31,6 +31,14 @@ const PO = db.define('purchaseOrder', {
         type: Sequelize.STRING,
         allowNull: false
     },
+    ETA:{
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    ETD:{
+        type: Sequelize.STRING,
+        allowNull: false
+    },
     PO:{
         type: Sequelize.STRING,
         allowNull: false
