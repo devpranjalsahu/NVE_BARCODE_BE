@@ -15,6 +15,10 @@ const Box = db.define('box', {
         type: Sequelize.BIGINT,
         allowNull: false
     },
+    purchaseOrderId:{
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
     shipmentSequenceId:{
         type: Sequelize.STRING,
         allowNull: false
@@ -72,9 +76,6 @@ const Box = db.define('box', {
 
 
 Box.belongsTo(purchaseOrderModel)
-// Box.belongsTo(barcodeModel)
-
-// purchaseOrderModel.belongsToMany(Box,{ through: 'BoxPo' })
 
 
 module.exports = Box;

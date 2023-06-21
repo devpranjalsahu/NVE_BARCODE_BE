@@ -74,6 +74,7 @@ new: async (req, res)=>{
     const fact = user.factory || null;
     const sup = user.supplier || null;
     const {poEntries, userEntries,weightData} = req.body;
+    console.log(req.body)
     const shipmentSequence = await shipmentModel.create({
         username:user.username
     });
@@ -101,14 +102,14 @@ new: async (req, res)=>{
             shipmentSequenceId:shipmentSequence.id,
             ShipNo:weightData.ShipNo
             }).then(async res => {
+                
                 const keys = Object.keys(userEntries);
-                console.log(keys,'xx')
                 for(const key of keys){
                     
                     await boxModel.create({
-                        barcodeID:res.id,
-                        purchaseOrderID:poEntries[key],
-            shipmentSequenceId:shipmentSequence.id,
+                        barcodeId:res.id,
+                        purchaseOrderId:poEntries[key],
+                        shipmentSequenceId:shipmentSequence.id,
 
                         ...userEntries[key],
                     })
