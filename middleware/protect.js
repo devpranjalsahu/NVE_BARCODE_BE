@@ -24,9 +24,10 @@ exports.protect = async (req, res, next) => {
     }
     }
     catch (err) {
+            console.log("not a valid token",err)
             return res.status(401).json({ message: "not a valid token" });
         }
-    
+    console.log("not a valid token")
     return res.status(401).json({ message: "not a valid token" });
   };
 

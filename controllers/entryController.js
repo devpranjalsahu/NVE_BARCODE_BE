@@ -6,10 +6,9 @@ const purchaseOrderModel = require('../models/purchaseOrderModel');
 const balanceQuantityModel = require('../models/balanceQuantityModel');
 const packedQuantityModel = require('../models/packedQuantityModel');
 const barcodeModel = require('../models/barcodeModel');
-const boxModel = require('../models/boxModel');
-const shipmentModel = require('../models/shipmentModel');
 const entryModel = require('../models/entryModel');
 const db = require('../config/db');
+const BoxItem = require('../models/boxModel');
 
 
 const countTotal = (obj)=>{
@@ -18,44 +17,69 @@ const countTotal = (obj)=>{
     countableKeys.forEach( key =>{
         sum+=parseInt(obj[key]||0)
     })
+    console.log(sum)
     return sum
 }
 module.exports ={
 
 getAll: async (req, res) => {
     const user = req.user;
-    console.log(user, user.username)
+
    
-    const entries = await entryModel.findAll({
+    var entries = await entryModel.findAll({
         where:{
             username:user.username
-        }
+        },
+        raw:true
     })
-    res.status(200).json({
-        entries
-    })
+    // const requests =  entries.map(async (entry,i)=>{
+    //     const barcodeData = await barcodeModel.findOne({
+    //         where:{
+    //             shipmentSequenceId:entry.shipmentSequenceId
+    //         }
+    //     })
+    
+    //     const boxData = await boxModel.findOne({
+    //         where:{
+    //             shipmentSequenceId:entry.shipmentSequenceId
+    
+    //         },
+    //         raw:true,
+    //         include:[purchaseOrderModel]
+    //     })
+
+    //     // entry.PO = boxData['purchaseOrder.PO']||'null';
+    //     // entry.STY = boxData['purchaseOrder.STY']||'null';
+    // })
+    
+    
+      // Wait for all requests, and then setState
+    //   return Promise.all(requests).then(() => {
+    //     console.log('send')
+    // res.status(200).json({
+    //     entries
+    // })
+    //   });
+      res.status(200).json({
+        entries})
+    // console.log(entries)
+
 },
 
 get: async (req, res) =>{
     const user = req.user;
-    const {shipmentSequenceId} = req.query;
+    const {id} = req.query;
     const entry = await entryModel.findOne({
         where:{
             username:user.username,
-            shipmentSequenceId
+            id
         }
 
     })
 
-    const barcodeData = await barcodeModel.findOne({
+    const boxData = await BoxItem.findAll({
         where:{
-            shipmentSequenceId:shipmentSequenceId
-        }
-    })
-
-    const boxData = await boxModel.findAll({
-        where:{
-            barcodeId:barcodeData.id
+            entryId:id
 
         },
         include:[purchaseOrderModel]
@@ -65,7 +89,7 @@ get: async (req, res) =>{
 
     // console.log(boxData)
     res.status(200).json({
-        barcodeData,
+        entry,
         boxData
     })
 },
@@ -74,51 +98,29 @@ new: async (req, res)=>{
     const fact = user.factory || null;
     const sup = user.supplier || null;
     const {poEntries, userEntries,weightData} = req.body;
-    console.log(req.body)
-    const shipmentSequence = await shipmentModel.create({
-        username:user.username
-    });
     const entry = await entryModel.create({
-        username:user.username,
-        noOfBoxes:weightData.numOfBoxes,
+            username:user.username,
+            noOfBoxes:weightData.numOfBoxes,
             NetWt:weightData.NetWt,
             GrossWt:weightData.GrossWt,
             Length:weightData.Length,
             Width:weightData.Width,
             Height:weightData.Height,
-            shipmentSequenceId:shipmentSequence.id,
             ShipNo:weightData.ShipNo
     })
-
-
     for(let i = 0; i <weightData.numOfBoxes;i++){
         const bc = barcodeModel.create({
             username:user.username,
-            NetWt:weightData.NetWt,
-            GrossWt:weightData.GrossWt,
-            Length:weightData.Length,
-            Width:weightData.Width,
-            Height:weightData.Height,
-            shipmentSequenceId:shipmentSequence.id,
-            ShipNo:weightData.ShipNo
-            }).then(async res => {
-                
-                const keys = Object.keys(userEntries);
-                for(const key of keys){
-                    
-                    await boxModel.create({
-                        barcodeId:res.id,
-                        purchaseOrderId:poEntries[key],
-                        shipmentSequenceId:shipmentSequence.id,
-
-                        ...userEntries[key],
-                    })
-                }   
-            });
+            entryId:entry.id,
+            })
     }
-
     const keys = Object.keys(userEntries);
     for (const key of keys) {
+        await boxModel.create({
+            purchaseOrderId:poEntries[key],
+            entryId:entry.id,
+            ...userEntries[key],
+        })
        const currentPackedQuantity = await packedQuantityModel.findOne({
             where:{
                 purchaseOrderId:poEntries[key]
@@ -179,132 +181,137 @@ new: async (req, res)=>{
     
     res.json({message:'success'})
 },
-delete: async ( req, res) =>{
-    const user = req.user;
-    const {shipmentSequenceId} = req.query;
-    if(!shipmentSequenceId) return res.status(400).json({
-        status:'fail',
-        message:"No shipmentSequenceID"
-    })
+// delete: async ( req, res) =>{
+//     const user = req.user;
+//     const {shipmentSequenceId} = req.query;
+//     console.log(shipmentSequenceId)
+//     if(!shipmentSequenceId) return res.status(400).json({
+//         status:'fail',
+//         message:"No shipmentSequenceID"
+//     })
     
-    // Check if shipmentSequenceId exists
-    // Also verifying user is same
+//     // Check if shipmentSequenceId exists
+//     // Also verifying user is same
 
-    const shipmentSequenceDetails = await shipmentModel.findOne({
-        where:{
-            id:shipmentSequenceId
-        }
-    })
+//     const shipmentSequenceDetails = await shipmentModel.findOne({
+//         where:{
+//             id:shipmentSequenceId
+//         }
+//     })
 
-    if(shipmentSequenceDetails==null) return res.status(400).json({
-        message:"not entry found"
-    })
+//     if(shipmentSequenceDetails==null) return res.status(400).json({
+//         message:"not entry found"
+//     })
 
-    if(shipmentSequenceDetails.username !== user.username) return res.status(409).json({
-        message:"Entry doesn't belong to you"
-    })
+//     if(shipmentSequenceDetails.username !== user.username) return res.status(409).json({
+//         message:"Entry doesn't belong to you"
+//     })
 
-    const boxes = await boxModel.findAll({
-        where:{
-            shipmentSequenceId
-        },
-        raw:true
-    })
-    const groupedById = _.groupBy(boxes,'purchaseOrderID');
-    const totalQtyByIds = {};
-    const totalQuantities = {};
-    Object.keys(groupedById).forEach(key => {
-        totalQuantities[key] =  countTotal(groupedById[key][0])*groupedById[key].length
-        var sumObj = {
-            SZ01:0,
-            SZ02:0,
-            SZ03:0,
-            SZ04:0,
-            SZ05:0,
-            SZ06:0,
-            SZ07:0,
-            SZ08:0,
-            SZ09:0,
-            SZ10:0,
-            SZ11:0,
-            SZ12:0
-        }
-        const data = groupedById[key];
-        data.forEach(d =>{
-            sumObj = {
-                SZ01:sumObj.SZ01+(parseInt(d.SZ01)||0),
-                SZ02:sumObj.SZ02+(parseInt(d.SZ02)||0),
-                SZ03:sumObj.SZ03+(parseInt(d.SZ03)||0),
-                SZ04:sumObj.SZ04+(parseInt(d.SZ04)||0),
-                SZ05:sumObj.SZ05+(parseInt(d.SZ05)||0),
-                SZ06:sumObj.SZ06+(parseInt(d.SZ06)||0),
-                SZ07:sumObj.SZ07+(parseInt(d.SZ07)||0),
-                SZ08:sumObj.SZ08+(parseInt(d.SZ08)||0),
-                SZ09:sumObj.SZ09+(parseInt(d.SZ09)||0),
-                SZ10:sumObj.SZ10+(parseInt(d.SZ10)||0),
-                SZ11:sumObj.SZ11+(parseInt(d.SZ11)||0),
-                SZ12:sumObj.SZ12+(parseInt(d.SZ12)||0),
-            }
-        })
-        totalQtyByIds[key] = sumObj
-    })
-    const t = await db.transaction();
-    try {
-        for(var key of  Object.keys(groupedById)){
-                await balanceQuantityModel.increment({
-                    ...totalQtyByIds[key],
-                    TOT_QTY:totalQuantities[key]
-                },{
-                    where:{
-                        purchaseOrderId:key
-                    },
-                    transaction:t
-                })
-                await packedQuantityModel.decrement({
-                    ...totalQtyByIds[key],
-                    TOT_QTY:totalQuantities[key]
-                },{
-                    where:{
-                        purchaseOrderId:key
-                    },
-                    transaction:t
-                }) 
-                await boxModel.destroy(
-                    {
-                        where:{
-                            shipmentSequenceId,
-                            purchaseOrderID:key
-                        },
-                        transaction:t
-                    }
-                )
-                await entryModel.destroy(
-                    {
-                        where:{
-                            shipmentSequenceId,
-                        }
-                    }
-                )
+//     const boxes = await boxModel.findAll({
+//         where:{
+//             shipmentSequenceId
+//         },
+//         raw:true
+//     })
+//     console.log(boxes)
+//     const groupedById = _.groupBy(boxes,'purchaseOrderId');
+//     console.log(groupedById)
+//     const totalQtyByIds = {};
+//     const totalQuantities = {};
+//     Object.keys(groupedById).forEach(key => {
+//         totalQuantities[key] =  countTotal(groupedById[key][0])*groupedById[key].length
+//         var sumObj = {
+//             SZ01:0,
+//             SZ02:0,
+//             SZ03:0,
+//             SZ04:0,
+//             SZ05:0,
+//             SZ06:0,
+//             SZ07:0,
+//             SZ08:0,
+//             SZ09:0,
+//             SZ10:0,
+//             SZ11:0,
+//             SZ12:0
+//         }
+//         const data = groupedById[key];
+//         data.forEach(d =>{
+//             sumObj = {
+//                 SZ01:sumObj.SZ01+(parseInt(d.SZ01)||0),
+//                 SZ02:sumObj.SZ02+(parseInt(d.SZ02)||0),
+//                 SZ03:sumObj.SZ03+(parseInt(d.SZ03)||0),
+//                 SZ04:sumObj.SZ04+(parseInt(d.SZ04)||0),
+//                 SZ05:sumObj.SZ05+(parseInt(d.SZ05)||0),
+//                 SZ06:sumObj.SZ06+(parseInt(d.SZ06)||0),
+//                 SZ07:sumObj.SZ07+(parseInt(d.SZ07)||0),
+//                 SZ08:sumObj.SZ08+(parseInt(d.SZ08)||0),
+//                 SZ09:sumObj.SZ09+(parseInt(d.SZ09)||0),
+//                 SZ10:sumObj.SZ10+(parseInt(d.SZ10)||0),
+//                 SZ11:sumObj.SZ11+(parseInt(d.SZ11)||0),
+//                 SZ12:sumObj.SZ12+(parseInt(d.SZ12)||0),
+//             }
+//         })
+//         totalQtyByIds[key] = sumObj
+//     })
+//     const t = await db.transaction();
+//     try {
+//             for(var key of  Object.keys(groupedById)){
+//                 await balanceQuantityModel.increment({
+//                     ...totalQtyByIds[key],
+//                     TOT_QTY:totalQuantities[key]
+//                 },{
+//                     where:{
+//                         purchaseOrderId:key
+//                     },
+//                     transaction:t
+//                 })
+//                 await packedQuantityModel.decrement({
+//                     ...totalQtyByIds[key],
+//                     TOT_QTY:totalQuantities[key]
+//                 },{
+//                     where:{
+//                         purchaseOrderId:key
+//                     },
+//                     transaction:t
+//                 }) 
+//                 await boxModel.destroy(
+//                     {
+//                         where:{
+//                             shipmentSequenceId,
+//                             purchaseOrderId:key
+//                         },
+//                         transaction:t
+//                     }
+//                 )
+//                 await entryModel.destroy(
+//                     {
+//                         where:{
+//                             shipmentSequenceId,
+//                         },
+//                         transaction:t
+//                     }
+//                 )
                 
-             }
+//              }
 
             
       
-        // If the execution reaches this line, the transaction has been committed successfully
-        // `result` is whatever was returned from the transaction callback (the `user`, in this case)
+//                 // If the execution reaches this line, the transaction has been committed successfully
+//             // `result` is whatever was returned from the transaction callback (the `user`, in this case)
       
-      } catch (error) {
-      console.log('e',error)
-      await t.rollback();
-        // If the execution reaches this line, an error occurred.
-        // The transaction has already been rolled back automatically by Sequelize!
+//         }
+//       catch (error) {
+//       console.log('e',error)
+//       await t.rollback();
+//         // If the execution reaches this line, an error occurred.
+//         // The transaction has already been rolled back automatically by Sequelize!
       
-      }
-      console.log('pp')
-      await t.commit();
-    res.json({
-        message:"success"
+//       }
+//       console.log('pp')
+//       await t.commit();
+//     res.json({
+//         message:"success"
 
-    })
-}
+//     })
+// }
 }

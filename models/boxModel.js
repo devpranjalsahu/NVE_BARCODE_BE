@@ -2,25 +2,24 @@ const Sequelize = require('sequelize');
 const db = require('../config/db');
 const purchaseOrderModel = require('./purchaseOrderModel');
 const barcodeModel = require('./barcodeModel');
+const entryModel = require('./entryModel');
 
 
 
-const Box = db.define('box', {
+
+
+const BoxItem = db.define('boxitem', {
     id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    barcodeId: {
+    entryId: {
         type: Sequelize.BIGINT,
         allowNull: false
     },
     purchaseOrderId:{
         type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    shipmentSequenceId:{
-        type: Sequelize.STRING,
         allowNull: false
     },
     SZ01:{
@@ -75,7 +74,7 @@ const Box = db.define('box', {
 });
 
 
-Box.belongsTo(purchaseOrderModel)
+BoxItem.belongsTo(purchaseOrderModel)
+BoxItem.belongsToMany(barcodeModel,{through:entryModel})
 
-
-module.exports = Box;
+module.exports = BoxItem;

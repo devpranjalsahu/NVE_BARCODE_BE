@@ -26,8 +26,10 @@ getFilteredPurchaseOrders: async (req, res) => {
 
     const user = req.user;
     const {PO, STY, SEA, LOT, DIM, CLR, FACT, SUP} = req.body;
+
     const fact = user.factory || null;
     const sup = user.supplier || null;
+
     const poData = await purchaseOrderModel.findAll({
         where:{
             [Op.and]: [
@@ -43,7 +45,6 @@ getFilteredPurchaseOrders: async (req, res) => {
         },
         include:[balanceQuantityModel,packedQuantityModel]
     })
-
     res.status(200).json(poData)
 },
 
