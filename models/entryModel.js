@@ -9,6 +9,12 @@ const Entry = db.define('entry', {
         primaryKey: true,
         autoIncrement: true
     },
+    PO:{
+        type: Sequelize.STRING,
+    },
+    STY:{
+        type: Sequelize.STRING,
+    },
     noOfBoxes:{
         type: Sequelize.STRING,
         allowNull: false

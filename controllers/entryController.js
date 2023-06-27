@@ -98,6 +98,10 @@ new: async (req, res)=>{
     const fact = user.factory || null;
     const sup = user.supplier || null;
     const {poEntries, userEntries,weightData} = req.body;
+    const poKeys = Object.keys(poEntries);
+    const poId = poEntries[poKeys[0]]
+    const purchaseOrder = await purchaseOrderModel.findByPk(poId);
+
     const entry = await entryModel.create({
             username:user.username,
             noOfBoxes:weightData.numOfBoxes,
@@ -106,7 +110,9 @@ new: async (req, res)=>{
             Length:weightData.Length,
             Width:weightData.Width,
             Height:weightData.Height,
-            ShipNo:weightData.ShipNo
+            ShipNo:weightData.ShipNo,
+            PO:purchaseOrder.PO,
+            STY:purchaseOrder.STY
     })
     for(let i = 0; i <weightData.numOfBoxes;i++){
         const bc = barcodeModel.create({
