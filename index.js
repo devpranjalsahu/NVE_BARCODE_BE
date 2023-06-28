@@ -18,7 +18,7 @@ const routes = require('./routes/index');
 app.use(morgan('dev'))
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-app.use(cors("*"));
+app.use(cors());
 app.use('/api/v1',routes);
 app.use('/sync',async (req, res) => {
     await db.sync({ alter: true });
@@ -28,10 +28,10 @@ return res.send('success')
 app.use('/status',(req,res)=>{
     res.send("live")
 })
-app.use("*",(req,res)=>{
-    console.log("No path found for")
-    res.status(404).send("404")
-})
+// app.use("*",(req,res)=>{
+//     console.log("No path found for")
+//     res.status(404).send("404")
+// })
 const PORT = process.env.PORT || 5100;
 
 db.sync({
