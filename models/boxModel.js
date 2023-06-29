@@ -73,8 +73,6 @@ const BoxItem = db.define('boxitem', {
     
 });
 
-
 BoxItem.belongsTo(purchaseOrderModel)
-BoxItem.belongsToMany(barcodeModel,{through:entryModel})
 
 module.exports = BoxItem;

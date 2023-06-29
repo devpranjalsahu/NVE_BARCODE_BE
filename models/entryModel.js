@@ -5,7 +5,7 @@ const barcodeModel = require('./barcodeModel');
 
 const Entry = db.define('entry', {
     id: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.STRING,
         primaryKey: true,
         autoIncrement: true
     },
@@ -53,6 +53,6 @@ const Entry = db.define('entry', {
 });
 
 
-Entry.hasMany(barcodeModel)
+// Entry.hasMany(barcodeModel)
 
 module.exports = Entry;
