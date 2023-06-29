@@ -35,7 +35,7 @@ app.use('/status',(req,res)=>{
 const PORT = process.env.PORT || 5100;
 
 db.sync({
-    logging: false,
+    logging: true
     // force:true
 }).then(() => {
     app.listen(PORT, console.log(`Server started on port ${PORT}`));

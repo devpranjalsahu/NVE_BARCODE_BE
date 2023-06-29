@@ -16,10 +16,10 @@ module.exports ={
 
 convert: async (req, res) => {
     const user = req.user;
-
+    const path = `./${user.username}${Date.now().csv}`
     //   							Company
     const csvWriter = createCsvWriter({
-        path: './xcv.csv',
+        path,
         header: [
             {id:"entryId", title:"SequenceId"},      
              {id: "id" , title :"BarcodeId"},
@@ -51,33 +51,87 @@ convert: async (req, res) => {
              {id: "company" , title :"Company"},
         ]
     });
-   const entries = await db.query(`SELECT
-   *
-FROM
-   "barcodes" AS barcode
-RIGHT OUTER JOIN (
-    SELECT *
-    FROM "boxitems"
-    INNER JOIN "purchaseOrders" ON "boxitems"."purchaseOrderId" = "purchaseOrders"."id"
-  ) AS b ON
-   barcode."entryId" = "b"."entryId"
-   LEFT JOIN "entries" AS entry ON barcode."entryId" = entry."id";`, {raw:true})
-    
+//    const entries = await db.query(`SELECT
+//    barcode.id AS barcode_id,
+//    barcode.entryId AS barcode_entryId,
+//    barcode.createdAt AS barcode_createdAt,
+//    barcode.updatedAt AS barcode_updatedAt,
+//    b.id AS boxitems_id,
+//    b.entryId AS boxitems_entryId,
+//    b.purchaseOrderId AS boxitems_purchaseOrderId,
+//    b.SZ01 AS boxitems_SZ01,
+//    b.SZ02 AS boxitems_SZ02,
+//    b.SZ03 AS boxitems_SZ03,
+//    b.SZ04 AS boxitems_SZ04,
+//    b.SZ05 AS boxitems_SZ05,
+//    b.SZ06 AS boxitems_SZ06,
+//    b.SZ07 AS boxitems_SZ07,
+//    b.SZ08 AS boxitems_SZ08,
+//    b.SZ09 AS boxitems_SZ09,
+//    b.SZ10 AS boxitems_SZ10,
+//    b.SZ11 AS boxitems_SZ11,
+//    b.SZ12 AS boxitems_SZ12,
+//    entry.id AS entry_id,
+//    entry.PO AS entry_PO,
+//    entry.STY AS entry_STY,
+//    entry.noOfBoxes AS entry_noOfBoxes,
+//    entry.username AS entry_username,
+//    entry.NetWt AS entry_NetWt,
+//    entry.GrossWt AS entry_GrossWt,
+//    entry.Length AS entry_Length,
+//    entry.Width AS entry_Width,
+//    entry.Height AS entry_Height,
+//    entry.ShipNo AS entry_ShipNo,
+//    entry.createdAt AS entry_createdAt,
+//    entry.updatedAt AS entry_updatedAt
+//  FROM barcodes AS barcode
+//  RIGHT OUTER JOIN (
+//    SELECT
+//      boxitems.id,
+//      boxitems.entryId,
+//      boxitems.purchaseOrderId,
+//      boxitems.SZ01,
+//      boxitems.SZ02,
+//      boxitems.SZ03,
+//      boxitems.SZ04,
+//      boxitems.SZ05,
+//      boxitems.SZ06,
+//      boxitems.SZ07,
+//      boxitems.SZ08,
+//      boxitems.SZ09,
+//      boxitems.SZ10,
+//      boxitems.SZ11,
+//      boxitems.SZ12
+//    FROM boxitems
+//    INNER JOIN purchaseOrders ON boxitems.purchaseOrderId = purchaseOrders.id
+//  ) AS b ON barcode.entryId = b.entryId
+//  LEFT JOIN entries AS entry ON barcode.entryId = entry.id;
+//  `, {raw:true})
 
-   csvWriter.writeRecords(entries[0].map(x=>{
-    return {...x, company:user.company}
-})) 
-   .then(() => {
-       console.log('...Done');
-   });
-
-
-
-    res.status(200).json({
-        boxes:entries[0].map(x=>{
-            return {...x, company:user.company}
-        })
+    const entries = await barcodeModel.findAll({
+        include:[
+            {
+                model:boxModel,
+                right:true,
+                required:false,
+                include:[{model:entryModel},{
+                    model:purchaseOrderModel
+                }]
+            },
+        ],raw:true
     })
+
+
+//    csvWriter.writeRecords(entries[0].map(x=>{
+//     return {...x, company:user.company}
+// })) 
+//    .then(() => {
+//        console.log('...Done');
+//    });
+
+
+res.status(200).json({boxes:entries[0]})
+    // res.sendFile(path)
 },
 }
 

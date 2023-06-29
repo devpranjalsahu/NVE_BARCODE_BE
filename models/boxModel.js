@@ -74,5 +74,6 @@ const BoxItem = db.define('boxitem', {
 });
 
 BoxItem.belongsTo(purchaseOrderModel)
+BoxItem.belongsTo(entryModel)
 
 module.exports = BoxItem;
