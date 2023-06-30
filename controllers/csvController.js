@@ -4,12 +4,7 @@ const _ = require('underscore');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
 
-const purchaseOrderModel = require('../models/purchaseOrderModel');
-const balanceQuantityModel = require('../models/balanceQuantityModel');
-const packedQuantityModel = require('../models/packedQuantityModel');
-const barcodeModel = require('../models/barcodeModel');
-const boxModel = require('../models/boxModel');
-const entryModel = require('../models/entryModel');
+
 const db = require('../config/db');
 
 
@@ -105,7 +100,7 @@ convert: async (req, res) => {
       boxitems.SZ12
     FROM boxitems
   ) AS b ON barcode.entryId = b.entryId
-  LEFT JOIN entries AS entry ON barcode.entryId = entry.id) as result LEFT  JOIN purchaseOrders AS po ON result.boxitems_purchaseOrderId = po.id ORDER BY result.barcode_id;
+  LEFT JOIN entries AS entry ON barcode.entryId = entry.id) as result LEFT  JOIN purchaseOrders AS po ON result.boxitems_purchaseOrderId = po.id WHERE entry_username = '${user.username}' ORDER BY result.barcode_id;
  `, {raw:true})
 
 
