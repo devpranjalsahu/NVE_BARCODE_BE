@@ -26,9 +26,6 @@ const Barcode = db.define('barcode', {
 },{
     initialAutoIncrement:"34029015993015800"
 });
-// Barcode.hasMany(boxModel, {foreignKey:'entryId'})
-Barcode.hasMany(boxModel, { foreignKey: "entryId" });
-boxModel.belongsTo(Barcode, { foreignKey: "entryId"});
 
 
 

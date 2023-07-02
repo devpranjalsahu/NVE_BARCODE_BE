@@ -127,12 +127,6 @@ const PO = db.define('purchaseOrder', {
 });
 PO.hasOne(packedQuantityModel)
 PO.hasOne(balanceQuantityModel)
-balanceQuantityModel.belongsTo(PO,{
-    foreignKey: "id",
-    as: "balanceQuantity2",
-  })
-packedQuantityModel.belongsTo(PO,{
-    foreignKey: "id",
-    as: "packedQuantity2",
-  })
+balanceQuantityModel.belongsTo(PO)
+packedQuantityModel.belongsTo(PO)
 module.exports = PO;

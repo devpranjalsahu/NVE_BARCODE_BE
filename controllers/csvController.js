@@ -28,7 +28,7 @@ convert: async (req, res) => {
              {id: "LOT" , title :"Lot"},
              {id: "CLR" , title :"Clr"},
              {id: "DIM" , title :"Dim"},
-             {id: "TOT_QTY" , title :"Tot_Qty"},
+             {id: "boxitems_TOT_QTY" , title :"Tot_Qty"},
              {id: "boxitems_SZ01",  title :"SZ01"},
              {id: "boxitems_SZ02" , title :" SZ02"},
              {id: "boxitems_SZ03" , title :" SZ03"},

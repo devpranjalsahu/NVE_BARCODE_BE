@@ -76,7 +76,10 @@ get: async (req, res) =>{
         }
 
     })
-
+    console.log('xxxx',entry)
+    if(entry === null) return res.status(400).json({
+        message:'No data found!'
+    })
     const boxData = await BoxItem.findAll({
         where:{
             entryId:id
@@ -101,7 +104,9 @@ new: async (req, res)=>{
     const poKeys = Object.keys(poEntries);
     const poId = poEntries[poKeys[0]]
     const purchaseOrder = await purchaseOrderModel.findByPk(poId);
-
+    if(!purchaseOrder) return res.status(400).json({
+        message:"Data invalid"
+    })
     const entry = await entryModel.create({
             username:user.username,
             noOfBoxes:weightData.numOfBoxes,
@@ -248,67 +253,67 @@ delete: async ( req, res) =>{
     })
 console.log(totalQtyByIds, totalQuantities)
 
-    const t = await db.transaction();
-    try {
-            for(var key of  Object.keys(groupedById)){
-                await balanceQuantityModel.increment({
-                    ...totalQtyByIds[key],
-                    TOT_QTY:totalQuantities[key]
-                },{
-                    where:{
-                        purchaseOrderId:key
-                    },
-                    transaction:t
-                })
-                await packedQuantityModel.decrement({
-                    ...totalQtyByIds[key],
-                    TOT_QTY:totalQuantities[key]
-                },{
-                    where:{
-                        purchaseOrderId:key
-                    },
-                    transaction:t
-                }) 
+    // const t = await db.transaction();
+    // try {
+    //         for(var key of  Object.keys(groupedById)){
+    //             await balanceQuantityModel.increment({
+    //                 ...totalQtyByIds[key],
+    //                 TOT_QTY:totalQuantities[key]
+    //             },{
+    //                 where:{
+    //                     purchaseOrderId:key
+    //                 },
+    //                 transaction:t
+    //             })
+    //             await packedQuantityModel.decrement({
+    //                 ...totalQtyByIds[key],
+    //                 TOT_QTY:totalQuantities[key]
+    //             },{
+    //                 where:{
+    //                     purchaseOrderId:key
+    //                 },
+    //                 transaction:t
+    //             }) 
                 
                 
-             }
+    //          }
 
-             await BoxItem.destroy(
-                {
-                    where:{
-                       entryId:id
-                    },
-                    transaction:t
-                }
-            )
-            await entryModel.destroy(
-                {
-                    where:{
-                        id,
-                    },
-                    transaction:t
-                }
-            )
-            await barcodeModel.destroy({
-                where:{
-                    entryId:id
-                },
-                transaction:t
-            })
+    //          await BoxItem.destroy(
+    //             {
+    //                 where:{
+    //                    entryId:id
+    //                 },
+    //                 transaction:t
+    //             }
+    //         )
+    //         await entryModel.destroy(
+    //             {
+    //                 where:{
+    //                     id,
+    //                 },
+    //                 transaction:t
+    //             }
+    //         )
+    //         await barcodeModel.destroy({
+    //             where:{
+    //                 entryId:id
+    //             },
+    //             transaction:t
+    //         })
       
-                // If the execution reaches this line, the transaction has been committed successfully
-            // `result` is whatever was returned from the transaction callback (the `user`, in this case)
+    //             // If the execution reaches this line, the transaction has been committed successfully
+    //         // `result` is whatever was returned from the transaction callback (the `user`, in this case)
       
-        }
-      catch (error) {
-      console.log('e',error)
-      await t.rollback();
-        // If the execution reaches this line, an error occurred.
-        // The transaction has already been rolled back automatically by Sequelize!
+    //     }
+    //   catch (error) {
+    //   console.log('e',error)
+    //   await t.rollback();
+    //     // If the execution reaches this line, an error occurred.
+    //     // The transaction has already been rolled back automatically by Sequelize!
       
-      }
-      console.log('pp')
-      await t.commit();
+    //   }
+    //   console.log('pp')
+    //   await t.commit();
     res.json({
         message:"success"
 
