@@ -14,6 +14,11 @@ const Barcode = db.define('barcode', {
         primaryKey: true,
         autoIncrement: true
     },
+    version: { // Optimistic Locking
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+    },
     username:{
         type: Sequelize.STRING,
         allowNull: false
@@ -24,7 +29,8 @@ const Barcode = db.define('barcode', {
     }
 
 },{
-    initialAutoIncrement:"34029015993015800"
+    initialAutoIncrement:"34029015993015800",
+    version:true
 });
 
 

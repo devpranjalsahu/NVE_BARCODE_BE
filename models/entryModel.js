@@ -9,6 +9,11 @@ const Entry = db.define('entry', {
         primaryKey: true,
         autoIncrement: true
     },
+    version: { // Optimistic Locking
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+    },
     PO:{
         type: Sequelize.STRING,
     },
@@ -49,7 +54,8 @@ const Entry = db.define('entry', {
     }
     
 },{
-    initialAutoIncrement:"10000000"
+    initialAutoIncrement:"10000000",
+    version:true
 });
 
 

@@ -9,6 +9,11 @@ const BQ = db.define('balanceQuantity', {
         primaryKey: true,
         autoIncrement: true,
     },
+    version: { // Optimistic Locking
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+    },
     purchaseOrderId: {
         type: Sequelize.INTEGER,
         unique:true
@@ -118,5 +123,7 @@ const BQ = db.define('balanceQuantity', {
         allowNull: false
     },
     
+},{
+    version:true
 });
 module.exports = BQ;

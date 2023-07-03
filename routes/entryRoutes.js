@@ -11,7 +11,7 @@ router.post('/new',protect,service.new);
 router.get('/getAll',protect,service.getAll);
 router.get('/get',protect,service.get);
 router.get('/delete',protect,service.delete);
-// router.post('/getFilteredPurchaseOrders',protect,service.getFilteredPurchaseOrders);
+router.post('/update',protect,service.update);
 
 
 module.exports = router;

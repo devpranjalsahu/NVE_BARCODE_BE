@@ -2,10 +2,16 @@ const Sequelize = require('sequelize');
 const db = require('../config/db');
 
 const PQ = db.define('packedQuantity', {
+
     id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+    },
+    version: { // Optimistic Locking
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        defaultValue: 0
     },
     purchaseOrderId: {
         type: Sequelize.INTEGER,
@@ -129,6 +135,8 @@ const PQ = db.define('packedQuantity', {
         defaultValue:"0"
     },
     
+},{
+    version:true
 });
 
 module.exports = PQ;

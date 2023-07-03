@@ -76,7 +76,6 @@ get: async (req, res) =>{
         }
 
     })
-    console.log('xxxx',entry)
     if(entry === null) return res.status(400).json({
         message:'No data found!'
     })
@@ -195,7 +194,6 @@ new: async (req, res)=>{
 delete: async ( req, res) =>{
     const user = req.user;
     const {id} = req.query;
-    console.log(id)
     if(!id) return res.status(400).json({
         status:'fail',
         message:"No id found"
@@ -225,16 +223,14 @@ delete: async ( req, res) =>{
         },
         raw:true
     })
-    console.log(entryDetails, boxes)
     const groupedById = _.groupBy(boxes,'purchaseOrderId');
-    console.log(groupedById)
+
     const totalQtyByIds = {};
     const totalQuantities = {};
     Object.keys(groupedById).forEach(key => {
         var total = countTotal(groupedById[key][0])*entryDetails.noOfBoxes
         totalQuantities[key] =  total
-        const d = groupedById[key];
-     
+        const d = groupedById[key][0];
             sumObj = {
                 SZ01:(parseInt(d.SZ01)||0)*entryDetails.noOfBoxes,
                 SZ02:(parseInt(d.SZ02)||0)*entryDetails.noOfBoxes,
@@ -249,74 +245,179 @@ delete: async ( req, res) =>{
                 SZ11:(parseInt(d.SZ11)||0)*entryDetails.noOfBoxes,
                 SZ12:(parseInt(d.SZ12)||0)*entryDetails.noOfBoxes,
             }
+
         totalQtyByIds[key] = sumObj
     })
 console.log(totalQtyByIds, totalQuantities)
 
-    // const t = await db.transaction();
-    // try {
-    //         for(var key of  Object.keys(groupedById)){
-    //             await balanceQuantityModel.increment({
-    //                 ...totalQtyByIds[key],
-    //                 TOT_QTY:totalQuantities[key]
-    //             },{
-    //                 where:{
-    //                     purchaseOrderId:key
-    //                 },
-    //                 transaction:t
-    //             })
-    //             await packedQuantityModel.decrement({
-    //                 ...totalQtyByIds[key],
-    //                 TOT_QTY:totalQuantities[key]
-    //             },{
-    //                 where:{
-    //                     purchaseOrderId:key
-    //                 },
-    //                 transaction:t
-    //             }) 
+    const t = await db.transaction();
+    try {
+            for(var key of  Object.keys(groupedById)){
+                await balanceQuantityModel.increment({
+                    ...totalQtyByIds[key],
+                    TOT_QTY:totalQuantities[key]
+                },{
+                    where:{
+                        purchaseOrderId:key
+                    },
+                    transaction:t
+                })
+                await packedQuantityModel.decrement({
+                    ...totalQtyByIds[key],
+                    TOT_QTY:totalQuantities[key]
+                },{
+                    where:{
+                        purchaseOrderId:key
+                    },
+                    transaction:t
+                }) 
                 
                 
-    //          }
+             }
 
-    //          await BoxItem.destroy(
-    //             {
-    //                 where:{
-    //                    entryId:id
-    //                 },
-    //                 transaction:t
-    //             }
-    //         )
-    //         await entryModel.destroy(
-    //             {
-    //                 where:{
-    //                     id,
-    //                 },
-    //                 transaction:t
-    //             }
-    //         )
-    //         await barcodeModel.destroy({
-    //             where:{
-    //                 entryId:id
-    //             },
-    //             transaction:t
-    //         })
+             await BoxItem.destroy(
+                {
+                    where:{
+                       entryId:id
+                    },
+                    transaction:t
+                }
+            )
+            await entryModel.destroy(
+                {
+                    where:{
+                        id,
+                    },
+                    transaction:t
+                }
+            )
+            await barcodeModel.destroy({
+                where:{
+                    entryId:id
+                },
+                transaction:t
+            })
       
-    //             // If the execution reaches this line, the transaction has been committed successfully
-    //         // `result` is whatever was returned from the transaction callback (the `user`, in this case)
+                // If the execution reaches this line, the transaction has been committed successfully
+            // `result` is whatever was returned from the transaction callback (the `user`, in this case)
       
-    //     }
-    //   catch (error) {
-    //   console.log('e',error)
-    //   await t.rollback();
-    //     // If the execution reaches this line, an error occurred.
-    //     // The transaction has already been rolled back automatically by Sequelize!
+        }
+      catch (error) {
+      console.log('e',error)
+      await t.rollback();
+        // If the execution reaches this line, an error occurred.
+        // The transaction has already been rolled back automatically by Sequelize!
       
-    //   }
-    //   console.log('pp')
-    //   await t.commit();
+      }
+      console.log('pp')
+      await t.commit();
     res.json({
         message:"success"
 
+    })
+},
+update: async(req, res) =>{
+    const user = req.user;
+    const {boxData, weightData, seqId} = req.body;
+    const oldBoxData = await BoxItem.findAll({
+        where:{
+            entryId:seqId
+
+        }
+    })
+    const oldValues = oldBoxData.map(ob => {
+        return {
+        SZ01:parseInt(ob.SZ01)||0,
+        SZ02:parseInt(ob.SZ02)||0,
+        SZ03:parseInt(ob.SZ03)||0,
+        SZ04:parseInt(ob.SZ04)||0,
+        SZ05:parseInt(ob.SZ05)||0,
+        SZ06:parseInt(ob.SZ06)||0,
+        SZ07:parseInt(ob.SZ07)||0,
+        SZ08:parseInt(ob.SZ08)||0,
+        SZ09:parseInt(ob.SZ09)||0,
+        SZ10:parseInt(ob.SZ10)||0,
+        SZ11:parseInt(ob.SZ11)||0,
+        SZ12:parseInt(ob.SZ12)||0,}
+        })
+        const newValues = boxData.map(ob => {
+            return {
+            SZ01:ob.SZ01,
+            SZ02:ob.SZ02,
+            SZ03:ob.SZ03,
+            SZ04:ob.SZ04,
+            SZ05:ob.SZ05,
+            SZ06:ob.SZ06,
+            SZ07:ob.SZ07,
+            SZ08:ob.SZ08,
+            SZ09:ob.SZ09,
+            SZ10:ob.SZ10,
+            SZ11:ob.SZ11,
+            SZ12:ob.SZ12,}
+            })
+    let difValue = [];
+    newValues.map((ob,i)=>{
+        let cb = oldValues[i];
+        let result ={};
+        for (var key in ob) {
+            if (cb.hasOwnProperty(key)) {
+              result[key] = (ob[key] - cb[key]) * weightData.noOfBoxes;
+            } else {
+              result[key] = ob[key] * weightData.noOfBoxes;
+            }
+          }
+
+        difValue.push(result) 
+    })
+
+    for(var i in boxData){
+       
+        let purchaseOrderId = boxData[i].purchaseOrderId
+        await entryModel.update({
+            NetWt:  weightData.NetWt,
+            GrossWt:weightData.GrossWt,
+            Length: weightData.Length,
+            Width:  weightData.Width,
+            Height: weightData.Height,
+            ShipNo: weightData.ShipNo,
+        },{
+            where:{
+                id:seqId
+            }
+        })
+        await BoxItem.update({
+            ...newValues[i]
+        },{
+            where:{
+                entryId:seqId,
+                purchaseOrderId
+            }
+        });
+
+        await packedQuantityModel.increment({
+            ...difValue[i],
+            TOT_QTY:countTotal(difValue[i])
+            
+        },{
+            where:{
+                purchaseOrderId
+            }
+        })
+
+        await balanceQuantityModel.decrement({
+            ...difValue[i],
+            TOT_QTY:countTotal(difValue[i])
+            
+        },{
+            where:{
+                purchaseOrderId
+            }
+        })
+
+    }
+    console.log(oldBoxData,oldValues,newValues,boxData)
+    res.status(200).json({
+        message:'Updated Successfully!'
     })
 }
 }

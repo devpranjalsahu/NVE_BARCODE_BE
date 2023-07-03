@@ -103,15 +103,17 @@ convert: async (req, res) => {
   LEFT JOIN entries AS entry ON barcode.entryId = entry.id) as result LEFT  JOIN purchaseOrders AS po ON result.boxitems_purchaseOrderId = po.id WHERE entry_username = '${user.username}' ORDER BY result.barcode_id;
  `, {raw:true})
 
-
+if(entries[0].length===0) return res.status(400).json({
+    message:'No entries found!'
+})
 
 
    csvWriter.writeRecords(entries[0].map(x=>{
     return {...x, company:user.company}
-})) 
+        })) 
    .then(() => {
        console.log('...Done');
-       res.download(path.join(__dirname,'../',filepath),`${user.username}${Date.now().toString()}.csv`)
+       return res.download(path.join(__dirname,'../',filepath),`${user.username}${Date.now().toString()}.csv`)
    });
 
 

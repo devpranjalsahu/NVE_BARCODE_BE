@@ -14,6 +14,11 @@ const BoxItem = db.define('boxitem', {
         primaryKey: true,
         autoIncrement: true
     },
+    version: { // Optimistic Locking
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+    },
     entryId: {
         type: Sequelize.BIGINT,
         allowNull: false
@@ -71,6 +76,8 @@ const BoxItem = db.define('boxitem', {
         allowNull: false
     }
     
+},{
+    version:true
 });
 
 BoxItem.belongsTo(purchaseOrderModel)

@@ -15,12 +15,6 @@ const db = new Sequelize('dblerros', 'lerrosit', '*%SSub`}?b#yb6t>,u~xKilS|,Krm4
     dialect: 'mysql',
     port:3306,
     logging: false,
-    pool: {
-        max: 5,
-        min: 2,
-        acquire: 30000,
-        idle: 10000
-    }
 });
 // const db = new Sequelize('lerrosit_userinput', 'lerrosit', 'P@ssw0rd400', {
 //     host: 'localhost:3306',
