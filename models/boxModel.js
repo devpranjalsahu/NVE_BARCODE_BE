@@ -27,6 +27,10 @@ const BoxItem = db.define('boxitem', {
         type: Sequelize.INTEGER,
         allowNull: false
     },
+    TOT_QTY:{
+        type: Sequelize.STRING,
+        allowNull: false
+    },
     SZ01:{
         type: Sequelize.STRING,
         allowNull: false

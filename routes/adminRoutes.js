@@ -13,7 +13,7 @@ router.post('/createUser',isAdmin,service.create);
 router.post('/createAdmin',adminService.create);
 router.post('/updateUser',isAdmin,service.update);
 router.get('/loadLots',isAdmin,adminService.loadLots);
-router.get('/loadPOs',isAdmin,adminService.loadPOs);
+router.get('/loadPOs',adminService.loadPOs);
 
 
 module.exports = router;

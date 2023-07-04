@@ -130,6 +130,7 @@ new: async (req, res)=>{
             purchaseOrderId:poEntries[key],
             entryId:entry.id,
             ...userEntries[key],
+            TOT_QTY:countTotal(userEntries[key])
         })
        const currentPackedQuantity = await packedQuantityModel.findOne({
             where:{

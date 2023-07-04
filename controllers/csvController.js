@@ -57,6 +57,7 @@ convert: async (req, res) => {
     b.id AS boxitems_id,
     b.entryId AS boxitems_entryId,
     b.purchaseOrderId AS boxitems_purchaseOrderId,
+    b.TOT_QTY AS boxitems_TOT_QTY,
     b.SZ01 AS boxitems_SZ01,
     b.SZ02 AS boxitems_SZ02,
     b.SZ03 AS boxitems_SZ03,
@@ -97,7 +98,8 @@ convert: async (req, res) => {
       boxitems.SZ09,
       boxitems.SZ10,
       boxitems.SZ11,
-      boxitems.SZ12
+      boxitems.SZ12,
+      boxitems.TOT_QTY
     FROM boxitems
   ) AS b ON barcode.entryId = b.entryId
   LEFT JOIN entries AS entry ON barcode.entryId = entry.id) as result LEFT  JOIN purchaseOrders AS po ON result.boxitems_purchaseOrderId = po.id WHERE entry_username = '${user.username}' ORDER BY result.barcode_id;
