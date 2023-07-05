@@ -17,9 +17,10 @@ const countTotal = (obj)=>{
     countableKeys.forEach( key =>{
         sum+=parseInt(obj[key]||0)
     })
-    console.log(sum)
     return sum
 }
+
+
 module.exports ={
 
 getAll: async (req, res) => {
@@ -387,7 +388,8 @@ update: async(req, res) =>{
             }
         })
         await BoxItem.update({
-            ...newValues[i]
+            ...newValues[i],
+            TOT_QTY:countTotal(newValues)
         },{
             where:{
                 entryId:seqId,
@@ -415,8 +417,28 @@ update: async(req, res) =>{
             }
         })
 
+        await BoxItem.destroy({
+            where:{
+                entryId:seqId,
+                SZ01:0,
+                SZ02:0,
+                SZ03:0,
+                SZ04:0,
+                SZ05:0,
+                SZ06:0,
+                SZ07:0,
+                SZ09:0,
+                SZ08:0,
+                SZ12:0,
+                SZ10:0,
+                SZ11:0
+
+            }
+        })
+        
+
     }
-    console.log(oldBoxData,oldValues,newValues,boxData)
+    
     res.status(200).json({
         message:'Updated Successfully!'
     })
