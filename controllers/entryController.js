@@ -389,7 +389,7 @@ update: async(req, res) =>{
         })
         await BoxItem.update({
             ...newValues[i],
-            TOT_QTY:countTotal(newValues)
+            TOT_QTY:countTotal(newValues[i])
         },{
             where:{
                 entryId:seqId,
