@@ -26,9 +26,18 @@ getFilteredPurchaseOrders: async (req, res) => {
 
     const user = req.user;
     const {PO, STY, SEA, LOT, DIM, CLR, FACT, SUP} = req.body;
-
     const fact = user.factory || null;
     const sup = user.supplier || null;
+    console.log([
+        fact ? {Fact:fact} : FACT?{FACT}: null,
+        sup ? {SUP:sup} : SUP?{SUP}:null,
+        PO ? {PO} : null,
+        STY ? {STY} : null,
+        SEA ? {SEA} : null,
+        LOT ? {LOT} : null,
+        DIM ? {DIM} : null,
+        CLR ? {CLR} : null,
+    ].filter(x => x!=null))
 
     const poData = await purchaseOrderModel.findAll({
         where:{
