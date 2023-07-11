@@ -45,6 +45,19 @@ update: (req, res) => {
             });
         });
 },
+delete: (req, res) =>{
+    const {id} = req.query;
+
+    User.destroy({
+        where:{
+            id
+        }
+    }).then(data=>{
+        res.status(200).json({
+            message:"Deleted Successfully!"
+        })
+    })
+},
 getAll: (req, res) => {
     User.findAll().then(data => {
         res.status(200).json({

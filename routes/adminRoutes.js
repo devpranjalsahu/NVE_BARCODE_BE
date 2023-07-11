@@ -11,6 +11,7 @@ router.post('/login', adminService.login);
 router.get('/getAllUsers',isAdmin,service.getAll);
 router.get('/getUser', isAdmin, service.get);
 router.post('/createUser',isAdmin,service.create);
+router.get('/deleteUser',isAdmin,service.delete);
 router.post('/createAdmin',adminService.create);
 router.post('/updateUser',isAdmin,service.update);
 router.get('/loadLots',isAdmin,adminService.loadLots);
