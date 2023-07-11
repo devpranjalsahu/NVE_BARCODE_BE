@@ -83,7 +83,7 @@ res.status(200).json({
         const {method, fileName} = req.body;
 
         let tempFilePath;
-        let data;
+
         if(method==='drag')
         {
             tempFilePath = file.tempFilePath;
@@ -96,22 +96,25 @@ res.status(200).json({
          console.log(tempFilePath)
         }
         const jsonStream = fs.createReadStream(tempFilePath);
+        var i=0;
         jsonStream.pipe(parser)
         .on('data', async (d) => {
-            try{
-                    const po = await PO.create(d)
-                    await PQ.create({
-                        ...d,
-                        purchaseOrderId:po.id,
-                        TOT_QTY:"0"
-                    },{fields:[
-                        'purchaseOrderId','SOL','FCUS','TYP','SUP','FACT','PO','SEA','STY','DES','SIZE','LOT','CLR','DIM','TOT_QTY',
-                    ]})
-                    await BQ.create({...d,purchaseOrderId:po.id})
-                }
-                    catch(err){
-                        console.log(err)
-                    }
+            console.log(i)
+            i++;
+            // try{
+            //         const po = await PO.create(d)
+            //         await PQ.create({
+            //             ...d,
+            //             purchaseOrderId:po.id,
+            //             TOT_QTY:"0"
+            //         },{fields:[
+            //             'purchaseOrderId','SOL','FCUS','TYP','SUP','FACT','PO','SEA','STY','DES','SIZE','LOT','CLR','DIM','TOT_QTY',
+            //         ]})
+            //         await BQ.create({...d,purchaseOrderId:po.id})
+            //     }
+            //         catch(err){
+            //             console.log(err)
+            //         }
         })
         .on('end', () => {
           

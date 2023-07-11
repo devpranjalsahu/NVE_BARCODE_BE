@@ -57,5 +57,19 @@ getAll: (req, res) => {
             message: "Bad request"
         });
     });
-}
+},
+get: (req, res) => {
+    const {id} = req.query;
+    User.findByPk(id).then(user=>{
+        res.json({
+            user
+        })
+    }).catch(error=>{
+        console.log(error);
+        res.status(400).json({
+            error: error,
+            message: "Bad request"
+        });
+    })
+} 
 };
